@@ -48,7 +48,7 @@ class SideEffects : SideEffect {
     ) : SideEffect
     data class NavigateToRoot(val popToReceive: Boolean = false) : SideEffect
     data class TransactionSent(val data: ProcessedTransactionDetails) : SideEffect
-    data class Logout(val reason: LogoutReason) : SideEffect
+    data class Logout constructor(val reason: LogoutReason) : SideEffect
     object WalletDelete : SideEffect
     data class CopyToClipboard(val value: String, val message: String? = null, val label: String? = null, val isSensitive: Boolean = false) : SideEffect
     data class AccountArchived(val account: Account) : SideEffect

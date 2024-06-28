@@ -10,13 +10,13 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.database.Database
 import com.blockstream.common.database.LoginCredentials
+import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.JsonConverter
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.device.DeviceInterface
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
@@ -231,7 +231,7 @@ abstract class CountlyBase(
          } as HashMap<String, Any>
      }
 
-     private fun deviceSegmentation(device: DeviceInterface, segmentation: HashMap<String, Any> = hashMapOf()): HashMap<String, Any>{
+     private fun deviceSegmentation(device: GreenDevice, segmentation: HashMap<String, Any> = hashMapOf()): HashMap<String, Any>{
          device.deviceBrand.brand.let { segmentation[PARAM_BRAND] = it }
          device.gdkHardwareWallet?.also {
              segmentation[PARAM_FIRMWARE] = it.firmwareVersion ?: ""
@@ -653,15 +653,15 @@ abstract class CountlyBase(
          }
      }
 
-     fun hardwareConnect(device: DeviceInterface) {
+     fun hardwareConnect(device: GreenDevice) {
          eventRecord(Events.HWW_CONNECT.toString(), deviceSegmentation(device))
      }
 
-     fun hardwareConnected(device: DeviceInterface) {
+     fun hardwareConnected(device: GreenDevice) {
          eventRecord(Events.HWW_CONNECTED.toString(), deviceSegmentation(device))
      }
 
-     fun jadeOtaStart(device: DeviceInterface, config: String, isDelta: Boolean, version: String) {
+     fun jadeOtaStart(device: GreenDevice, config: String, isDelta: Boolean, version: String) {
          eventRecord(Events.OTA_START.toString(), deviceSegmentation(device , baseSegmentation()).also { segmentation ->
              segmentation[PARAM_SELECTED_CONFIG] = config.lowercase()
              segmentation[PARAM_SELECTED_DELTA] = isDelta
@@ -672,7 +672,7 @@ abstract class CountlyBase(
          eventStart(Events.OTA_COMPLETE.toString())
      }
 
-    fun jadeOtaRefuse(device: DeviceInterface, config: String, isDelta: Boolean, version: String) {
+    fun jadeOtaRefuse(device: GreenDevice, config: String, isDelta: Boolean, version: String) {
         eventRecord(Events.OTA_REFUSE.toString(), deviceSegmentation(device , baseSegmentation()).also { segmentation ->
             segmentation[PARAM_SELECTED_CONFIG] = config.lowercase()
             segmentation[PARAM_SELECTED_DELTA] = isDelta
@@ -682,7 +682,7 @@ abstract class CountlyBase(
         eventCancel(Events.OTA_COMPLETE.toString())
     }
 
-    fun jadeOtaFailed(device: DeviceInterface, error:String, config: String, isDelta: Boolean, version: String) {
+    fun jadeOtaFailed(device: GreenDevice, error:String, config: String, isDelta: Boolean, version: String) {
         eventRecord(Events.OTA_FAILED.toString(), deviceSegmentation(device , baseSegmentation()).also { segmentation ->
             segmentation[PARAM_ERROR] = error
             segmentation[PARAM_SELECTED_CONFIG] = config.lowercase()
@@ -693,7 +693,7 @@ abstract class CountlyBase(
         eventCancel(Events.OTA_COMPLETE.toString())
     }
 
-     fun jadeOtaComplete(device: DeviceInterface, config: String, isDelta: Boolean, version: String) {
+     fun jadeOtaComplete(device: GreenDevice, config: String, isDelta: Boolean, version: String) {
          eventEnd(Events.OTA_COMPLETE.toString(), deviceSegmentation(device , baseSegmentation()).also { segmentation ->
              segmentation[PARAM_SELECTED_CONFIG] = config
              segmentation[PARAM_SELECTED_DELTA] = isDelta
