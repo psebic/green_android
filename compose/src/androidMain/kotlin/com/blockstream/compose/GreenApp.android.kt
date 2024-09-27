@@ -36,7 +36,7 @@ fun Fragment.AppFragmentBridge(content: @Composable () -> Unit) {
             LocalDialog provides dialogState,
             LocalSnackbar provides snackbarHostState,
             LocalPlatformManager provides platformManager,
-            LocalActivity provides activity,
+            LocalActivity provides activity
         ) {
             BottomSheetNavigatorM3 {
                 Scaffold(
@@ -86,7 +86,8 @@ fun GreenAndroidPreview(content: @Composable () -> Unit) {
     GreenTheme {
         CompositionLocalProvider(
             LocalDialog provides dialogState,
-            LocalPlatformManager provides platformManager
+            LocalPlatformManager provides platformManager,
+            LocalPreview provides true
         ) {
             BottomSheetNavigatorM3 {
                 DialogHost(state = dialogState)
