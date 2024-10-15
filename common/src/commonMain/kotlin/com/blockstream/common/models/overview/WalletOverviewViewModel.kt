@@ -243,6 +243,10 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
     }
 
     init {
+        // For animation reasons, set navData title immediately
+        _navData.value = NavData(
+            title = greenWallet.name
+        )
 
         session.ifConnected {
             combine(greenWalletFlow.filterNotNull(), isWalletOnboarding) { greenWallet, isWalletOnboarding ->
@@ -310,6 +314,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
 
             // Handle pending URI (BIP-21 or lightning)
             sessionManager.pendingUri.filterNotNull().debounce(50L).onEach {
+                logger.d { "Handling pending intent in WalletOverviewViewModel" }
                 // Check if pendingUri is consumed from SendViewModel
                 if (sessionManager.pendingUri.value != null) {
                     handleUserInput(it, isQr = false)
@@ -373,7 +378,7 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             is LocalEvents.Send -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        if (session.isNoBlobWatchOnly) {
+                        if (session.isNoBlobWatchOnly && !session.isAirgapped) {
                             NavigateDestinations.Sweep(
                                 accountAsset = session.activeAccount.value?.accountAsset
                             )
@@ -406,6 +411,8 @@ class WalletOverviewViewModel(greenWallet: GreenWallet) :
             }
         }
     }
+
+    companion object: Loggable()
 }
 
 class WalletOverviewViewModelPreview(val isEmpty: Boolean = false) :

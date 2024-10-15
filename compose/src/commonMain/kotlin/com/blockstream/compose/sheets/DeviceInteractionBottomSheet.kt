@@ -162,10 +162,6 @@ fun DeviceInteractionBottomSheet(
                         viewModel.postEvent(Events.OpenBrowser(Urls.HELP_MASTER_BLINDING_KEY))
                     }
                 }
-
-                if(message != null) {
-
-                }
             }
         }
     }

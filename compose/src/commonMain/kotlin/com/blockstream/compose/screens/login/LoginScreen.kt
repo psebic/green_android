@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -71,6 +70,7 @@ import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.login.LoginViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.LocalRootNavigator
 import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.Banner
@@ -83,13 +83,13 @@ import com.blockstream.compose.components.RichWatchOnlyButton
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.sheets.Bip39PassphraseBottomSheet
-import com.blockstream.compose.sideeffects.rememberBiometricsState
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.headlineMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.lightning
 import com.blockstream.compose.theme.red
+import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
@@ -134,6 +134,7 @@ fun LoginScreen(
     viewModel: LoginViewModelAbstract,
 ) {
     val navigator = LocalRootNavigator.current
+    val biometricsState = LocalBiometricState.current
 
     val pinCredentials by viewModel.pinCredentials.collectAsStateWithLifecycle()
     val passwordCredentials by viewModel.passwordCredentials.collectAsStateWithLifecycle()
@@ -143,8 +144,6 @@ fun LoginScreen(
             LoginViewModel.LocalEvents.Bip39Passphrase(it, null)
         )
     }
-
-    val biometricsState = rememberBiometricsState()
 
     HandleSideEffect(viewModel) {
         when (it) {
@@ -233,7 +232,7 @@ fun LoginScreen(
                     Text(
                         text = applicationSettings.proxyUrl ?: "proxy Url",
                         style = bodySmall,
-                        color = whiteMedium
+                        color = textMedium
                     )
                 }
             }
@@ -323,7 +322,7 @@ fun LoginScreen(
                                 Image(
                                     painter = painterResource(Res.drawable.eye),
                                     contentDescription = "Watch Only",
-                                    // colorFilter = ColorFilter.tint(lightning),
+                                    // colorFilter = ColorFilter.tint(green),
                                     alpha = 0.25f,
                                     modifier = Modifier
                                         .size(128.dp)

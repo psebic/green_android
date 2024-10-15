@@ -109,10 +109,10 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.md_theme_background
+import com.blockstream.compose.theme.textHigh
+import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.theme.whiteHigh
-import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AppBar
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.noRippleClickable
@@ -451,7 +451,7 @@ fun WalletOverviewScreen(
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp),
-                isWatchOnly = viewModel.sessionOrNull?.isNoBlobWatchOnly == true,
+                canSend = viewModel.sessionOrNull?.let { it.isAirgapped || !it.isNoBlobWatchOnly  } ?: false,
                 isSweepEnabled = viewModel.sessionOrNull?.defaultNetworkOrNull?.isBitcoin == true,
                 showMenu = viewModel.appInfo.isDevelopmentOrDebug,
                 onSendClick = {
@@ -526,7 +526,7 @@ fun WalletBalance(viewModel: WalletOverviewViewModelAbstract) {
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = stringResource(Res.string.id_total_balance), color = whiteMedium)
+                Text(text = stringResource(Res.string.id_total_balance), color = textMedium)
                 val hideAmounts by viewModel.hideAmounts.collectAsStateWithLifecycle()
                 Icon(
                     painter = painterResource(if (hideAmounts) Res.drawable.eye_slash else Res.drawable.eye),
@@ -548,13 +548,13 @@ fun WalletBalance(viewModel: WalletOverviewViewModelAbstract) {
 
                     Text(
                         text = balancePrimary.takeIf { it.isNotBlank() } ?: " ",
-                        color = whiteHigh,
+                        color = textHigh,
                         fontSize = 26.sp,
                         fontWeight = FontWeight.Bold
                     )
                     val balanceSecondary by viewModel.balanceSecondary.collectAsStateWithLifecycle()
                     Text(text = balanceSecondary.takeIf { it.isNotBlank() } ?: " ",
-                        color = whiteMedium,
+                        color = textMedium,
                         style = bodyLarge)
                 }
 

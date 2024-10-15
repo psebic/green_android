@@ -31,7 +31,9 @@ class DeviceListViewModel(isJade: Boolean = true) :
         
     class LocalEvents {
         data class SelectDevice(val device: GreenDevice): Event
-        object ConnectViaQR: Events.NavigateTo(NavigateDestinations.JadeQR())
+        object ConnectViaQR: Events.EventSideEffect(sideEffect = SideEffects.NavigateTo(NavigateDestinations.AskJadeUnlock(isOnboarding = true)))
+        object ConnectViaQRPinUnlock: Events.NavigateTo(NavigateDestinations.JadePinUnlock)
+        object ConnectViaQRUnlocked: Events.NavigateTo(NavigateDestinations.ImportPubKey)
     }
 
     override val devices: StateFlow<List<GreenDevice>> = deviceManager.devices.map { devices ->

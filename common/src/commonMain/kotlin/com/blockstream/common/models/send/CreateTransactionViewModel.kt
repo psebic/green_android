@@ -29,6 +29,7 @@ import com.blockstream.common.gdk.params.BroadcastTransactionParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -326,6 +327,16 @@ abstract class CreateTransactionViewModelAbstract(
             }
         }
 
+    private suspend fun transactionConfirmLook() = session.pendingTransaction?.let {
+        TransactionConfirmLook.create(
+            params = it.params,
+            transaction = it.transaction,
+            account = account,
+            session = session,
+            isAddressVerificationOnDevice = true
+        )
+    }
+
     internal fun signAndSendTransaction(
         params: CreateTransactionParams?,
         originalTransaction: CreateTransaction?,
@@ -376,14 +387,7 @@ abstract class CreateTransactionViewModelAbstract(
                     postSideEffect(
                         SideEffects.NavigateTo(
                             NavigateDestinations.DeviceInteraction(
-                                transactionConfirmLook = TransactionConfirmLook.create(
-                                    params = params,
-                                    transaction = transaction,
-                                    account = account,
-                                    session = session,
-                                    denomination = _denomination.value,
-                                    isAddressVerificationOnDevice = true
-                                )
+                                transactionConfirmLook = transactionConfirmLook()
                             )
                         )
                     )
@@ -441,7 +445,16 @@ abstract class CreateTransactionViewModelAbstract(
             if (it.psbt != null) {
                 onProgress.value = false
                 _onProgressSending.value = false
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.JadeQR(psbt = it.psbt)))
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.JadeQR(
+                            JadeQrOperation.Psbt(
+                                psbt = it.psbt,
+                                transactionConfirmLook = transactionConfirmLook()
+                            )
+                        )
+                    )
+                )
             } else if (broadcast) {
                 countly.endSendTransaction(
                     session = session,

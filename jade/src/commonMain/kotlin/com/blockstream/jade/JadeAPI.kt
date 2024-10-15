@@ -496,7 +496,7 @@ class JadeAPI internal constructor(
 
     // Helper to make http requests (with retries)
     // NOTE: Uses GDKSession's httpRequest() call to ensure Tor use as appropriate.
-    private fun makeHttpRequest(
+    private suspend fun makeHttpRequest(
         httpRequest: HttpRequest
     ): JsonElement {
         // If it fails retry up to 3 times

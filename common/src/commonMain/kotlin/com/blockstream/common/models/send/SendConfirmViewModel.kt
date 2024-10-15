@@ -52,6 +52,9 @@ abstract class SendConfirmViewModelAbstract(greenWallet: GreenWallet, accountAss
 
     @NativeCoroutinesState
     abstract val showVerifyOnDevice: StateFlow<Boolean>
+
+    @NativeCoroutinesState
+    abstract val isAirgapped: StateFlow<Boolean>
 }
 
 class SendConfirmViewModel constructor(
@@ -62,6 +65,9 @@ class SendConfirmViewModel constructor(
     private val _showVerifyOnDevice = MutableStateFlow(false)
     override val showVerifyOnDevice = _showVerifyOnDevice
 
+    private val _isAirgapped = MutableStateFlow(false)
+    override val isAirgapped = _isAirgapped
+
     private val _transactionConfirmLook: MutableStateFlow<TransactionConfirmLook?> =
         MutableStateFlow(null)
 
@@ -71,6 +77,7 @@ class SendConfirmViewModel constructor(
     class LocalEvents {
         object Note : Event
         object VerifyOnDevice: Event
+        data class ResponseJadeUnlock(val isUnlocked: Boolean): Event
     }
 
     init {
@@ -128,6 +135,8 @@ class SendConfirmViewModel constructor(
                         if (it.params.isRedeposit) session.device?.canVerifyAddressOnDevice(account)
                             ?: false else false
 
+                    _isAirgapped.value = session.isAirgapped
+
                     _isValid.value = true
                 }
 
@@ -143,6 +152,13 @@ class SendConfirmViewModel constructor(
         super.handleEvent(event)
 
         when (event) {
+//            is LocalEvents.ResponseJadeUnlock -> {
+//                if (event.isUnlocked) {
+//                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.JadeQR(operation = JadeQrOperation.Psbt(psbt = ))))
+//                } else {
+//                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.JadeQR(operation = JadeQrOperation.PinUnlock)))
+//                }
+//            }
             is CreateTransactionViewModelAbstract.LocalEvents.SignTransaction -> {
                 session.pendingTransaction?.also {
                     signAndSendTransaction(
@@ -231,6 +247,7 @@ class SendConfirmViewModelPreview(
         MutableStateFlow(transactionConfirmLook)
 
     override val showVerifyOnDevice: StateFlow<Boolean> = MutableStateFlow(false)
+    override val isAirgapped: StateFlow<Boolean> = MutableStateFlow(true)
 
     init {
         banner.value = Banner.preview3

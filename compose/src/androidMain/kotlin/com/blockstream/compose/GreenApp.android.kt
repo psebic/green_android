@@ -62,8 +62,6 @@ fun Fragment.AppFragmentBridge(content: @Composable () -> Unit) {
 @Composable
 fun GreenAndroidPreview(content: @Composable () -> Unit) {
     val context = LocalContext.current
-    val dialogState = remember { DialogState() }
-    val platformManager = rememberPlatformManager()
 
     // startKoin only once
     KoinPlatformTools.defaultContext().getOrNull() ?: startKoin {
@@ -82,6 +80,10 @@ fun GreenAndroidPreview(content: @Composable () -> Unit) {
             }
         })
     }
+
+
+    val dialogState = remember { DialogState() }
+    val platformManager = rememberPlatformManager()
 
     GreenTheme {
         CompositionLocalProvider(

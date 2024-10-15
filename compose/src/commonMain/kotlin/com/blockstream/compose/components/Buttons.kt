@@ -32,16 +32,17 @@ import blockstream_green.common.generated.resources.id_increase_qr_size
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_paste
 import blockstream_green.common.generated.resources.id_scan_qr_code
-import blockstream_green.common.generated.resources.id_watchonly
 import blockstream_green.common.generated.resources.magnifying_glass_plus
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.question
 import blockstream_green.common.generated.resources.share_network
-import com.blockstream.compose.theme.GreenThemePreview
+import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.labelSmall
+import com.blockstream.compose.theme.textHigh
+import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.theme.whiteMedium
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -165,7 +166,7 @@ fun GreenButton(
             val buttonColors = if (enabled && color == GreenButtonColor.RED) {
                 ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
             } else if (enabled && color == GreenButtonColor.WHITE) {
-                ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                ButtonDefaults.outlinedButtonColors(contentColor = textHigh)
             } else {
                 ButtonDefaults.outlinedButtonColors()
             }
@@ -178,7 +179,7 @@ fun GreenButton(
             } else if (enabled && color == GreenButtonColor.WHITE) {
                 BorderStroke(
                     width = 1.dp,
-                    color = Color.White,
+                    color = textHigh,
                 )
             } else if (enabled && color == GreenButtonColor.GREENER) {
                 BorderStroke(
@@ -186,7 +187,7 @@ fun GreenButton(
                     color = MaterialTheme.colorScheme.primary,
                 )
             } else {
-                ButtonDefaults.outlinedButtonBorder
+                ButtonDefaults.outlinedButtonBorder(enabled = enabled)
             }
 
             OutlinedButton(
@@ -300,7 +301,7 @@ fun ZoomButton(onClick: () -> Unit) {
     GreenIconButton(
         text = stringResource(Res.string.id_increase_qr_size),
         icon = painterResource(Res.drawable.magnifying_glass_plus),
-        color = whiteMedium,
+        color = textMedium,
         onClick = onClick
     )
 }
@@ -364,7 +365,7 @@ fun AppSettingsButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 @Composable
 @Preview
 fun GreenButtonPreview() {
-    GreenThemePreview {
+    GreenChromePreview {
         GreenColumn(
             space = 6,
 //            modifier = Modifier.verticalScroll(rememberScrollState())

@@ -35,14 +35,12 @@ import blockstream_green.common.generated.resources.id_1d_minutes
 import blockstream_green.common.generated.resources.id_2fa_threshold
 import blockstream_green.common.generated.resources.id_a_screen_lock_must_be_enabled
 import blockstream_green.common.generated.resources.id_add_a_pgp_public_key_to_receive
-import blockstream_green.common.generated.resources.id_another_2fa_method_is_already
 import blockstream_green.common.generated.resources.id_archived_accounts
 import blockstream_green.common.generated.resources.id_auto_logout_timeout
 import blockstream_green.common.generated.resources.id_backup_recovery_phrase
 import blockstream_green.common.generated.resources.id_biometric_login_is_disabled
 import blockstream_green.common.generated.resources.id_biometric_login_is_enabled
 import blockstream_green.common.generated.resources.id_change_pin
-import blockstream_green.common.generated.resources.id_confirm_via_2fa_that_you
 import blockstream_green.common.generated.resources.id_copy_support_id
 import blockstream_green.common.generated.resources.id_denomination__exchange_rate
 import blockstream_green.common.generated.resources.id_display_values_in_s_and
@@ -56,7 +54,6 @@ import blockstream_green.common.generated.resources.id_pgp_key
 import blockstream_green.common.generated.resources.id_recovery_transaction_emails
 import blockstream_green.common.generated.resources.id_recovery_transactions
 import blockstream_green.common.generated.resources.id_request_recovery_transactions
-import blockstream_green.common.generated.resources.id_security_change
 import blockstream_green.common.generated.resources.id_set_an_email_for_recovery
 import blockstream_green.common.generated.resources.id_set_twofactor_threshold
 import blockstream_green.common.generated.resources.id_support
@@ -77,7 +74,6 @@ import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.data.WalletSetting
 import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.data.TwoFactorConfig
 import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
 import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.settings.WalletSettingsViewModel
@@ -85,7 +81,7 @@ import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
-import com.blockstream.compose.components.GreenAmountField
+import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
@@ -95,7 +91,6 @@ import com.blockstream.compose.dialogs.DenominationExchangeDialog
 import com.blockstream.compose.dialogs.SingleChoiceDialog
 import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.extensions.colorText
-import com.blockstream.compose.sideeffects.rememberBiometricsState
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleMedium
@@ -146,7 +141,7 @@ fun WalletSettingsScreen(
     var showThresholdDialog by remember { mutableStateOf<String?>(null) }
     var showTwoFactorChangeDialog by remember { mutableStateOf<WalletSettingsViewModel.LocalSideEffects.Disable2FA?>(null) }
 
-    val biometricsState = rememberBiometricsState()
+    val biometricsState = LocalBiometricState.current
 
     HandleSideEffect(viewModel) {
         when (it) {

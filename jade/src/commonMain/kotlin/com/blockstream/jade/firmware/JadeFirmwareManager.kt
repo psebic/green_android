@@ -145,7 +145,7 @@ class JadeFirmwareManager constructor(
 
     // Uses GDKSession's httpRequest() to get binary file from Jade firmware server
     @Throws(Exception::class)
-    private fun downloadBinary(path: String): ByteArray? {
+    private suspend fun downloadBinary(path: String): ByteArray? {
         logger.i { "Fetching firmware file: $path" }
         val ret = httpRequestHandler.httpRequest("GET", urls(path), null, "base64", emptyList())
         if(!ret.jsonObject.containsKey("body")){
@@ -157,7 +157,7 @@ class JadeFirmwareManager constructor(
 
     // Uses GDKSession's httpRequest() to get index file from Jade firmware server
     @Throws(Exception::class)
-    private fun downloadIndex(path: String): FirmwareChannels {
+    private suspend fun downloadIndex(path: String): FirmwareChannels {
         logger.i { "Fetching index file: $path" }
         val response = httpRequestHandler.httpRequest("GET", urls(path), null, "json", emptyList())
         if(!response.jsonObject.containsKey("body")){
@@ -168,7 +168,7 @@ class JadeFirmwareManager constructor(
     }
 
     // Get index file and filter channels as appropriate for the passed info
-    private fun getAvailableFirmwares(verInfo: VersionInfo): FirmwareImages? {
+    private suspend fun getAvailableFirmwares(verInfo: VersionInfo): FirmwareImages? {
         // Get relevant fw path (or if hw not supported)
         val fwPath = getFirmwarePath(verInfo)
         if (fwPath.isNullOrBlank()) {
@@ -192,7 +192,7 @@ class JadeFirmwareManager constructor(
     }
 
     // Load firmware file into the data object
-    private fun loadFirmware(fmw: FirmwareFileData) {
+    private suspend fun loadFirmware(fmw: FirmwareFileData) {
         try {
             // Load file from fw server
             val fw = downloadBinary(fmw.filepath)

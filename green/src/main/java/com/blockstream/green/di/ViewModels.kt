@@ -1,5 +1,6 @@
 package com.blockstream.green.di
 
+import com.blockstream.common.models.MainViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.about.AboutViewModel
 import com.blockstream.common.models.add.Account2of3ViewModel
@@ -14,6 +15,7 @@ import com.blockstream.common.models.demo.DemoViewModel
 import com.blockstream.common.models.devices.DeviceInfoViewModel
 import com.blockstream.common.models.devices.DeviceListViewModel
 import com.blockstream.common.models.devices.DeviceScanViewModel
+import com.blockstream.common.models.devices.ImportPubKeyViewModel
 import com.blockstream.common.models.devices.JadeGuideViewModel
 import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.models.home.HomeViewModel
@@ -66,13 +68,13 @@ import com.blockstream.common.models.transaction.TransactionViewModel
 import com.blockstream.common.models.twofactor.ReEnable2FAViewModel
 import com.blockstream.common.models.wallet.WalletDeleteViewModel
 import com.blockstream.common.models.wallet.WalletNameViewModel
-import com.blockstream.green.ui.MainActivityViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val viewModels = module {
-    viewModelOf(::MainActivityViewModel)
+    viewModelOf(::MainViewModel)
     viewModelOf(::AboutViewModel)
     viewModelOf(::DemoViewModel)
     viewModelOf(::SetupNewWalletViewModel)
@@ -125,6 +127,7 @@ val viewModels = module {
     viewModelOf(::DeviceInfoViewModel)
     viewModelOf(::DeviceScanViewModel)
     viewModelOf(::JadeFirmwareUpdateViewModel)
+    viewModelOf(::ImportPubKeyViewModel)
     viewModel {
         AssetDetailsViewModel(get(), get(), getOrNull())
     }
@@ -150,7 +153,7 @@ val viewModels = module {
         WalletSettingsViewModel(get(), get(), getOrNull())
     }
     viewModel {
-        JadeQRViewModel(getOrNull(), getOrNull(), get())
+        JadeQRViewModel(getOrNull(), get())
     }
     viewModel {
         CameraViewModel(get(), getOrNull(), getOrNull())

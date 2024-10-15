@@ -87,7 +87,7 @@ actual class BluetoothManager(val context: Context, val bluetoothAdapter: Blueto
     private val hasPermissions
         get() = BLE_PERMISSIONS.all { ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED }
 
-    fun permissionsGranted() {
+    actual fun permissionsGranted() {
         blePermissionsUpdate.tryEmit(Unit)
     }
 

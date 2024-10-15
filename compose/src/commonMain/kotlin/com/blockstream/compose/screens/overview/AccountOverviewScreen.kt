@@ -26,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -374,7 +373,7 @@ fun AccountOverviewScreen(
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp),
-                isWatchOnly = viewModel.sessionOrNull?.isNoBlobWatchOnly == true,
+                canSend = viewModel.sessionOrNull?.let { it.isAirgapped || !it.isNoBlobWatchOnly } ?: false,
                 isSweepEnabled = viewModel.sessionOrNull?.defaultNetworkOrNull?.isBitcoin == true,
                 onSendClick = {
                     viewModel.postEvent(AccountOverviewViewModel.LocalEvents.Send)

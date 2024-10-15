@@ -1,5 +1,6 @@
 package com.blockstream.green.data
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
@@ -14,9 +15,6 @@ import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.Loggable
-import com.blockstream.green.ui.AppActivity
-import com.blockstream.green.ui.dialogs.CountlyNpsDialogFragment
-import com.blockstream.green.ui.dialogs.CountlySurveyDialogFragment
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.isProductionFlavor
 import ly.count.android.sdk.Countly
@@ -136,7 +134,7 @@ class Countly constructor(
         updateFeedbackWidget()
     }
 
-    override fun onStart(activity: AppActivity) {
+    override fun onStart(activity: Activity) {
         countly.onStart(activity)
     }
 
@@ -228,9 +226,9 @@ class Countly constructor(
     override fun showFeedbackWidget(supportFragmentManager: FragmentManager) {
         feedbackWidget?.type.also { type ->
             if(type == ModuleFeedback.FeedbackWidgetType.nps){
-                CountlyNpsDialogFragment.show(supportFragmentManager)
+                // CountlyNpsDialogFragment.show(supportFragmentManager)
             }else if(type == ModuleFeedback.FeedbackWidgetType.survey){
-                CountlySurveyDialogFragment.show(supportFragmentManager)
+                // CountlySurveyDialogFragment.show(supportFragmentManager)
             }
         }
     }

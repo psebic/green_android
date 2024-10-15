@@ -17,6 +17,7 @@ import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.looks.AccountTypeLook
+import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
@@ -215,7 +216,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
                 sideEffect = if (session.isHardwareWallet) {
                     LocalSideEffects.ExperimentalFeaturesDialog(
                         SideEffects.NavigateTo(
-                            NavigateDestinations.JadeQR(isLightningMnemonicExport = true)
+                            NavigateDestinations.JadeQR(JadeQrOperation.LightningMnemonicExport)
                         )
                     )
                 } else {

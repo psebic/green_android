@@ -72,6 +72,7 @@ import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.navigation.getNavigationResult
 import com.blockstream.compose.navigation.setNavigationResult
+import com.blockstream.compose.sheets.AskJadeUnlockBottomSheet
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green
@@ -154,6 +155,14 @@ fun DeviceListScreen(
 
     val pullToRefreshState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
+
+    AskJadeUnlockBottomSheet.getResult { isUnlocked ->
+        if (isUnlocked) {
+            viewModel.postEvent(DeviceListViewModel.LocalEvents.ConnectViaQRUnlocked)
+        } else {
+            viewModel.postEvent(DeviceListViewModel.LocalEvents.ConnectViaQRPinUnlock)
+        }
+    }
 
     LaunchedEffect(isRefreshing) {
         if (isRefreshing) {
@@ -292,7 +301,8 @@ fun DeviceListScreen(
                                 stringResource(Res.string.id_follow_the_instructions_of_your),
                                 color = whiteHigh,
                                 style = titleMedium,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(horizontal = 32.dp)
                             )
                         }
                     }

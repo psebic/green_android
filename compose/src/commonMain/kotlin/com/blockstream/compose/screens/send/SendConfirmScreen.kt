@@ -24,6 +24,7 @@ import blockstream_green.common.generated.resources.id_from
 import blockstream_green.common.generated.resources.id_network_fee
 import blockstream_green.common.generated.resources.id_note
 import blockstream_green.common.generated.resources.id_sent_to
+import blockstream_green.common.generated.resources.id_sign_transaction_via_qr
 import blockstream_green.common.generated.resources.id_to
 import blockstream_green.common.generated.resources.id_total_spent
 import blockstream_green.common.generated.resources.id_verify_address_on_device
@@ -37,21 +38,25 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.models.send.SendConfirmViewModelAbstract
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
+import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.components.SlideToUnlock
 import com.blockstream.compose.screens.jade.JadeQRScreen
+import com.blockstream.compose.sheets.AskJadeUnlockBottomSheet
 import com.blockstream.compose.sheets.LocalBottomSheetNavigatorM3
 import com.blockstream.compose.sheets.NoteBottomSheet
 import com.blockstream.compose.theme.bodySmall
@@ -104,6 +109,22 @@ fun SendConfirmScreen(
                 psbt = it
             )
         )
+    }
+
+    JadeQRScreen.getResultPinUnlock {
+        viewModel.postEvent(
+            CreateTransactionViewModelAbstract.LocalEvents.SignTransaction()
+        )
+    }
+
+    AskJadeUnlockBottomSheet.getResult { isUnlocked ->
+        if (isUnlocked) {
+            viewModel.postEvent(
+                CreateTransactionViewModelAbstract.LocalEvents.SignTransaction()
+            )
+        } else {
+            viewModel.postEvent(NavigateDestinations.JadeQR(operation = JadeQrOperation.PinUnlock))
+        }
     }
 
     val bottomSheetNavigator = LocalBottomSheetNavigatorM3.current
@@ -263,18 +284,32 @@ fun SendConfirmScreen(
                 }
             }
 
-            SlideToUnlock(
-                modifier = Modifier.padding(top = 8.dp),
-                isLoading = onProgressSending,
-                enabled = buttonEnabled,
-                onSlideComplete = {
-                    viewModel.postEvent(
-                        CreateTransactionViewModelAbstract.LocalEvents.SignTransaction(
-                            broadcastTransaction = true
-                        )
-                    )
+
+            val isAirgapped by viewModel.isAirgapped.collectAsStateWithLifecycle()
+
+            if (isAirgapped) {
+                GreenButton(
+                    text = stringResource(Res.string.id_sign_transaction_via_qr),
+                    enabled = buttonEnabled,
+                    size = GreenButtonSize.BIG,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    viewModel.postEvent(NavigateDestinations.AskJadeUnlock(isOnboarding = false))
                 }
-            )
+            } else {
+                SlideToUnlock(
+                    modifier = Modifier.padding(top = 8.dp),
+                    isLoading = onProgressSending,
+                    enabled = buttonEnabled,
+                    onSlideComplete = {
+                        viewModel.postEvent(
+                            CreateTransactionViewModelAbstract.LocalEvents.SignTransaction(
+                                broadcastTransaction = true
+                            )
+                        )
+                    }
+                )
+            }
         }
     }
 }

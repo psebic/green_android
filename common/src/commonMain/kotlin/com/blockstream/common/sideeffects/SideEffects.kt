@@ -28,7 +28,7 @@ class SideEffects : SideEffect {
     data class ErrorSnackbar(val error: Throwable, val errorReport: ErrorReport? = null) :
         SideEffect
     data class Dialog(val title: StringHolder? = null, val message: StringHolder, val icon: DrawableResource? = null) : SideEffect
-    data class ErrorDialog(val error: Throwable, val errorReport: ErrorReport? = null) : SideEffect
+    data class ErrorDialog constructor(val error: Throwable, val errorReport: ErrorReport? = null) : SideEffect
     data class OpenDenomination(val denominatedValue: DenominatedValue): SideEffect
     data class OpenFeeBottomSheet(
         val greenWallet: GreenWallet,
@@ -47,8 +47,9 @@ class SideEffects : SideEffect {
         val errorReport: ErrorReport? = null,
     ) : SideEffect
     data class NavigateToRoot(val popToReceive: Boolean = false) : SideEffect
+    object CloseDrawer: SideEffect
     data class TransactionSent(val data: ProcessedTransactionDetails) : SideEffect
-    data class Logout constructor(val reason: LogoutReason) : SideEffect
+    data class Logout(val reason: LogoutReason) : SideEffect
     object WalletDelete : SideEffect
     data class CopyToClipboard(val value: String, val message: String? = null, val label: String? = null, val isSensitive: Boolean = false) : SideEffect
     data class AccountArchived(val account: Account) : SideEffect
@@ -78,4 +79,5 @@ class SideEffects : SideEffect {
 
     object SelectEnvironment: SideEffect
     object BleRequireRebonding: SideEffect
+    object RequestCipher : SideEffect
 }

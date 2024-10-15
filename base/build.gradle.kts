@@ -39,6 +39,8 @@ dependencies {
     api(libs.androidx.startup.runtime)
     api(libs.compose.material3)
     api(libs.androidx.work.runtime.ktx)
+    api(libs.androidx.activity.compose)
+    api(libs.androidx.core.splashscreen)
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Countly ---------------------------------------------------------------------------- */

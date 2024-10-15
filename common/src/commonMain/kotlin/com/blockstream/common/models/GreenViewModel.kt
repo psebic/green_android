@@ -17,19 +17,23 @@ import com.blockstream.common.CountlyBase
 import com.blockstream.common.ViewModelView
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.crypto.GreenKeystore
+import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.AppInfo
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.EncryptedData
 import com.blockstream.common.data.ErrorReport
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.NavData
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.TwoFactorResolverData
+import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.data.toSerializable
 import com.blockstream.common.database.Database
+import com.blockstream.common.database.LoginCredentials
 import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.events.Event
@@ -42,6 +46,7 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.logException
+import com.blockstream.common.extensions.objectId
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.TwoFactorResolver
 import com.blockstream.common.gdk.data.Account
@@ -51,6 +56,8 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
+import com.blockstream.common.managers.BluetoothManager
+import com.blockstream.common.managers.NotificationManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.navigation.NavigateDestination
@@ -59,16 +66,20 @@ import com.blockstream.common.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.Loggable
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.common.utils.generateWalletName
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.InternalKMPObservableViewModelApi
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.ViewModel
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -113,17 +124,18 @@ open class GreenViewModel constructor(
     val appInfo: AppInfo by inject()
     protected val database: Database by inject()
     protected val countly: CountlyBase by inject()
-    protected val sessionManager: SessionManager by inject()
+    val sessionManager: SessionManager by inject()
     val settingsManager: SettingsManager by inject()
     protected val applicationScope: ApplicationScope by inject()
     protected val greenKeystore: GreenKeystore by inject()
     val zendeskSdk: ZendeskSdk by inject()
+    private val notificationManager: NotificationManager by inject()
+    private val bluetoothManager: BluetoothManager by inject()
 
     internal val isPreview by lazy { this::class.simpleName?.contains("Preview") == true }
 
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
     private val _sideEffect: Channel<SideEffect> = Channel()
-    private val _sideEffectAppFragment: Channel<SideEffect> = Channel()
     // Check with Don't Keep activities if the logout event is persisted
 
     // Used only for AppFragment Navigation from dialogs, tabs or bottom sheets
@@ -135,9 +147,6 @@ open class GreenViewModel constructor(
 
     @NativeCoroutines
     val sideEffect = _sideEffect.receiveAsFlow()
-
-    @NativeCoroutines
-    val sideEffectAppFragment = _sideEffectAppFragment.receiveAsFlow()
 
     @NativeCoroutinesState
     val onProgress = MutableStateFlow(viewModelScope, false)
@@ -320,9 +329,6 @@ open class GreenViewModel constructor(
             viewModelScope.coroutineScope.launch {
                 _sideEffect.send(sideEffect)
             }
-            viewModelScope.coroutineScope.launch {
-                _sideEffectAppFragment.send(sideEffect)
-            }
         }
     }
 
@@ -360,9 +366,20 @@ open class GreenViewModel constructor(
 
     open suspend fun handleEvent(event: Event) {
         when(event){
+            is Events.ProvideCipher -> {
+                event.platformCipher?.also {
+                    biometricsPlatformCipher?.complete(it)
+                }
+
+                event.exception?.also {
+                    biometricsPlatformCipher?.completeExceptionally(it)
+                }
+            }
             is Events.NotificationPermissionGiven -> {
-                // Todo update notifications
-                // notificationManager.notificationPermissionGiven()
+                 notificationManager.notificationPermissionGiven()
+            }
+            is Events.BluetoothPermissionGiven -> {
+                bluetoothManager.permissionsGranted()
             }
             is Events.SetAccountAsset -> {
                 accountAsset.value = event.accountAsset
@@ -471,6 +488,16 @@ open class GreenViewModel constructor(
                         it.completeExceptionally(Exception("id_action_canceled"))
                     }else{
                         it.complete(event.method)
+                    }
+                }
+                _twoFactorDeferred = null
+            }
+            is Events.ResolveTwoFactorCode -> {
+                _twoFactorDeferred?.takeIf { !it.isCompleted }?.also {
+                    if(event.code == null){
+                        it.completeExceptionally(Exception("id_action_canceled"))
+                    }else{
+                        it.complete(event.code)
                     }
                 }
                 _twoFactorDeferred = null
@@ -801,23 +828,135 @@ open class GreenViewModel constructor(
     protected open fun setDenominatedValue(denominatedValue: DenominatedValue) { }
     protected open fun errorReport(exception: Throwable): ErrorReport? { return null}
 
-    var _twoFactorDeferred: CompletableDeferred<String>? = null
-    override suspend fun withSelectMethod(availableMethods: List<String>): CompletableDeferred<String> {
+    private var _twoFactorDeferred: CompletableDeferred<String>? = null
+    override suspend fun selectTwoFactorMethod(availableMethods: List<String>): CompletableDeferred<String> {
         return CompletableDeferred<String>().also {
             _twoFactorDeferred = it
-            postSideEffect(SideEffects.TwoFactorResolver(TwoFactorResolverData.selectMethod(availableMethods)))
+            postSideEffect(
+                SideEffects.TwoFactorResolver(
+                    TwoFactorResolverData.selectMethod(
+                        availableMethods
+                    )
+                )
+            )
         }
     }
 
-    override suspend fun getCode(
+    override suspend fun getTwoFactorCode(
         network: Network,
         enable2faCallMethod: Boolean,
         authHandlerStatus: AuthHandlerStatus
     ): CompletableDeferred<String> {
         return CompletableDeferred<String>().also {
             _twoFactorDeferred = it
-            postSideEffect(SideEffects.TwoFactorResolver(TwoFactorResolverData.getCode(network,enable2faCallMethod, authHandlerStatus)))
+            postSideEffect(
+                SideEffects.TwoFactorResolver(
+                    TwoFactorResolverData.getCode(
+                        network,
+                        enable2faCallMethod,
+                        authHandlerStatus
+                    )
+                )
+            )
         }
+    }
+
+    private var biometricsPlatformCipher: CompletableDeferred<PlatformCipher>? = null
+
+    internal fun createNewWatchOnlyWallet(
+        network: Network,
+        persistLoginCredentials: Boolean,
+        watchOnlyCredentials: WatchOnlyCredentials,
+        withBiometrics: Boolean,
+        isHardware: Boolean = false
+    ) {
+
+        val biometricsCipherProvider = viewModelScope.coroutineScope.async(
+            start = CoroutineStart.LAZY
+        ) {
+            CompletableDeferred<PlatformCipher>().let {
+                biometricsPlatformCipher = it
+                postSideEffect(SideEffects.RequestCipher)
+                it.await()
+            }
+        }
+
+        doAsync({
+            val loginData = session.loginWatchOnly(network = network, wallet = null, watchOnlyCredentials = watchOnlyCredentials)
+
+            // First get login credentials before creating the wallet
+            val loginCredentials: LoginCredentials? =
+                if (persistLoginCredentials || network.isSinglesig) {
+                    val credentialType: CredentialType
+                    val encryptedData: EncryptedData
+                    if (withBiometrics) {
+                        encryptedData = greenKeystore.encryptData(
+                            biometricsCipherProvider.await(),
+                            watchOnlyCredentials.toString().encodeToByteArray()
+                        )
+                        credentialType = CredentialType.BIOMETRICS_WATCHONLY_CREDENTIALS
+                    } else {
+                        encryptedData = greenKeystore.encryptData(
+                            watchOnlyCredentials.toString().encodeToByteArray()
+                        )
+                        credentialType = CredentialType.KEYSTORE_WATCHONLY_CREDENTIALS
+                    }
+
+                    createLoginCredentials(
+                        walletId = objectId().toString(), // temp
+                        network = network.id,
+                        credentialType = credentialType,
+                        encryptedData = encryptedData
+                    )
+                } else {
+                    null
+                }
+
+            // Check if wallet already exists
+            database.getWalletWithXpubHashId(
+                xPubHashId = loginData.networkHashId,
+                isTestnet = network.isTestnet,
+                isHardware = isHardware
+            )?.also { wallet ->
+                throw Exception("id_wallet_already_restored_s|${wallet.name}")
+            }
+
+            val wallet = GreenWallet.createWallet(
+                name = generateWalletName(settingsManager),
+                xPubHashId = loginData.networkHashId, // Use networkHashId as the watch-only is linked to a specific network
+                activeNetwork = session.activeAccount.value?.networkId
+                    ?: session.defaultNetwork.id,
+                activeAccount = session.activeAccount.value?.pointer ?: 0,
+                watchOnlyUsername = if (network.isSinglesig) "" else watchOnlyCredentials.username, // empty string helps us hide the username and still identify it as a wo
+                isTestnet = network.isTestnet,
+                isHardware = isHardware
+            ).also {
+                database.insertWallet(it)
+            }
+
+            loginCredentials?.also {
+                database.replaceLoginCredential(it.copy(wallet_id = wallet.id))
+            }
+
+            // Disconnect and reconnect with wallet
+            session.disconnectAsync()
+            session.loginWatchOnly(network = network, wallet = wallet, watchOnlyCredentials = watchOnlyCredentials)
+
+            sessionManager.upgradeOnBoardingSessionToWallet(wallet)
+            countly.importWallet(session)
+
+            wallet
+        }, onSuccess = {
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
+        })
+    }
+
+    // This is called from Voyager
+    @OptIn(InternalKMPObservableViewModelApi::class)
+    override fun onDispose() {
+        super.onDispose()
+        // Call the internal InternalKMPObservableViewModelApi
+        clear()
     }
 
     companion object: Loggable(){

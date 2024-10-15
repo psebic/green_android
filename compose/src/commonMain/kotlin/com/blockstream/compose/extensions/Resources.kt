@@ -83,7 +83,7 @@ import com.blockstream.compose.theme.liquid
 import com.blockstream.compose.theme.liquid_testnet
 import com.blockstream.compose.theme.orange
 import com.blockstream.compose.theme.red
-import com.blockstream.compose.theme.whiteHigh
+import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.utils.toPainter
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -177,9 +177,10 @@ fun Transaction.SPVResult.title() = when (this) {
     else -> Res.string.id_invalid_spv
 }
 
+@Composable
 fun TransactionLook.directionColor(index: Int) = when {
     transaction.isRefundableSwap -> red
-    else -> if ((transaction.assets.getOrNull(index)?.second ?: 0) < 0) whiteHigh else green
+    else -> if ((transaction.assets.getOrNull(index)?.second ?: 0) < 0) textHigh else green
 }
 
 @Composable

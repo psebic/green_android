@@ -1,5 +1,6 @@
 package com.blockstream.common.di
 
+import com.blockstream.common.models.MainViewModel
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.about.AboutViewModel
 import com.blockstream.common.models.add.Account2of3ViewModel
@@ -11,6 +12,7 @@ import com.blockstream.common.models.addresses.SignMessageViewModel
 import com.blockstream.common.models.archived.ArchivedAccountsViewModel
 import com.blockstream.common.models.camera.CameraViewModel
 import com.blockstream.common.models.demo.DemoViewModel
+import com.blockstream.common.models.devices.ImportPubKeyViewModel
 import com.blockstream.common.models.devices.JadeGuideViewModel
 import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.models.home.HomeViewModel
@@ -66,6 +68,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val factoryViewModels = module {
+    factoryOf(::MainViewModel)
     factoryOf(::AboutViewModel)
     factoryOf(::DemoViewModel)
     factoryOf(::SetupNewWalletViewModel)
@@ -114,6 +117,7 @@ val factoryViewModels = module {
     factoryOf(::RedepositViewModel)
     factoryOf(::ReEnable2FAViewModel)
     factoryOf(::WatchOnlyCredentialsSettingsViewModel)
+    factoryOf(::ImportPubKeyViewModel)
     factory {
         AssetDetailsViewModel(get(), get(), getOrNull())
     }
@@ -139,7 +143,7 @@ val factoryViewModels = module {
         WalletSettingsViewModel(get(), get(), getOrNull())
     }
     factory {
-        JadeQRViewModel(getOrNull(), getOrNull(), get())
+        JadeQRViewModel(getOrNull(), get())
     }
     factory {
         CameraViewModel(get(), getOrNull(), getOrNull())
