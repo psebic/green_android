@@ -31,6 +31,9 @@ class UseHardwareDeviceFragment : AppFragment<ComposeViewBinding>(
             (sideEffect.destination as? NavigateDestinations.DeviceList)?.also {
                 navigate(UseHardwareDeviceFragmentDirections.actionGlobalDeviceListFragment(isJade = it.isJade))
             }
+            (sideEffect.destination as? NavigateDestinations.ScanSatochip)?.also {
+                navigate(UseHardwareDeviceFragmentDirections.actionGlobalScanSatochipFragment())
+            }
         }
     }
 

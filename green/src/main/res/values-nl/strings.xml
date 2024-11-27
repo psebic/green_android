@@ -282,6 +282,7 @@
   <string name="id_congratulations">Gefeliciteerd!</string>
   <string name="id_connect_a_different_hardware">Sluit een ander hardwareapparaat aan</string>
   <string name="id_connect_hardware_wallet">Hardware wallet aansluiten</string>
+  <string name="id_connect_satochip">Connectez votre Satochip</string>
   <string name="id_connect_jade">Sluit Jade aan</string>
   <string name="id_connect_jade_with_a_usb_cable">Sluit je Jade aan met een USB-kabel om de nieuwste firmware-update te downloaden</string>
   <string name="id_connect_through_a_proxy">Via proxy verbinden</string>

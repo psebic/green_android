@@ -282,6 +282,7 @@
   <string name="id_congratulations">恭喜！</string>
   <string name="id_connect_a_different_hardware">连接一个不同的硬件设备</string>
   <string name="id_connect_hardware_wallet">连接硬件钱包</string>
+  <string name="id_connect_satochip">Connectez votre Satochip</string>
   <string name="id_connect_jade">连接Jade</string>
   <string name="id_connect_jade_with_a_usb_cable">使用USB数据线连接Jade以下载最新的固件更新</string>
   <string name="id_connect_through_a_proxy">通过proxy连接</string>

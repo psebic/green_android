@@ -282,6 +282,8 @@
   <string name="id_congratulations">Gratulujeme!</string>
   <string name="id_connect_a_different_hardware">Připojte jiné hardwarové zařízení</string>
   <string name="id_connect_hardware_wallet">Připojit hardwarovou peněženku</string>
+  <string name="id_connect_satochip">Connect Satochip</string>
+
   <string name="id_connect_jade">Připojte Jade</string>
   <string name="id_connect_jade_with_a_usb_cable">Připojte zařízení Jade pomocí USB kabelu a stáhněte si nejnovější aktualizaci firmwaru.</string>
   <string name="id_connect_through_a_proxy">Připojit se přes proxy</string>

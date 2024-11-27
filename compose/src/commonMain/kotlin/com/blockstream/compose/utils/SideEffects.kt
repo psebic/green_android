@@ -66,6 +66,7 @@ import com.blockstream.compose.screens.login.LoginScreen
 import com.blockstream.compose.screens.onboarding.SetupNewWalletScreen
 import com.blockstream.compose.screens.onboarding.hardware.JadeGuideScreen
 import com.blockstream.compose.screens.onboarding.hardware.UseHardwareDeviceScreen
+import com.blockstream.compose.screens.onboarding.hardware.ScanSatochipScreen
 import com.blockstream.compose.screens.onboarding.phone.AddWalletScreen
 import com.blockstream.compose.screens.onboarding.phone.EnterRecoveryPhraseScreen
 import com.blockstream.compose.screens.onboarding.phone.PinScreen
@@ -1041,6 +1042,12 @@ fun HandleSideEffect(
                         is NavigateDestinations.JadeGuide -> {
                             navigator?.push(
                                 JadeGuideScreen
+                            )
+                        }
+
+                        is NavigateDestinations.ScanSatochip -> {
+                            navigator?.push(
+                                ScanSatochipScreen
                             )
                         }
 

@@ -17,6 +17,8 @@ class UseHardwareDeviceViewModel : UseHardwareDeviceViewModelAbstract() {
     class LocalEvents {
         object ConnectJade: Event
         object ConnectDifferentHardwareDevice: Event
+        object BluetoothConnection: Event
+        object ScanSatochip: Event
         object JadeStore : Events.OpenBrowser(Urls.JADE_STORE)
     }
 
@@ -28,6 +30,12 @@ class UseHardwareDeviceViewModel : UseHardwareDeviceViewModelAbstract() {
         super.handleEvent(event)
 
         when (event) {
+            is LocalEvents.ScanSatochip -> {
+                println("ovde sada radiii")
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.ScanSatochip))
+                countly.scanSatochip()
+            }
+
             is LocalEvents.ConnectJade -> {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.DeviceList(isJade = true)))
             }

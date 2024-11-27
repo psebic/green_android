@@ -215,6 +215,16 @@ fun UseHardwareDeviceScreen(
                 viewModel.postEvent(UseHardwareDeviceViewModel.LocalEvents.ConnectDifferentHardwareDevice)
             }
 
+            GreenButton(
+                "NFC connection",
+                modifier = Modifier.fillMaxWidth(),
+                size = GreenButtonSize.BIG,
+                type = GreenButtonType.OUTLINE,
+                color = GreenButtonColor.WHITE
+            ) {
+                viewModel.postEvent(UseHardwareDeviceViewModel.LocalEvents.ScanSatochip)
+            }
+
             GreenRow(padding = 0, space = 4, modifier = Modifier
                 .noRippleClickable {
                     viewModel.postEvent(UseHardwareDeviceViewModel.LocalEvents.JadeStore)

@@ -282,6 +282,7 @@
   <string name="id_congratulations">Поздравляем!</string>
   <string name="id_connect_a_different_hardware">Подключить другое аппаратное устройство</string>
   <string name="id_connect_hardware_wallet">Подключите аппаратный кошелек</string>
+  <string name="id_connect_satochip">Connectez votre Satochip</string>
   <string name="id_connect_jade">Подключить Jade</string>
   <string name="id_connect_jade_with_a_usb_cable">Подключите Jade с помощью USB-кабеля, чтобы загрузить последнее обновление прошивки</string>
   <string name="id_connect_through_a_proxy">Установить соединение через прокси-сервер</string>

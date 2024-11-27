@@ -725,5 +725,10 @@
     <action android:id="@+id/action_global_recoveryCheckFragment" app:destination="@id/recoveryCheckFragment" />
     <action android:id="@+id/action_global_recoveryWordsFragment" app:destination="@id/recoveryWordsFragment" />
     <action android:id="@+id/action_global_walletSettingsFragment" app:destination="@id/walletSettingsFragment" /><action android:id="@+id/action_global_previousAddressesFragment" app:destination="@id/previousAddressesFragment"/>
+    <fragment
+        android:id="@+id/scanSatochipFragment"
+        android:name="com.blockstream.green.ui.devices.ScanSatochipFragment"
+        android:label="ScanSatochipFragment" />
+    <action android:id="@+id/action_global_scanSatochipFragment" app:destination="@id/scanSatochipFragment"/>
 
 </navigation>

@@ -160,6 +160,7 @@ sealed class NavigateDestinations : NavigateDestination {
 
     object Countries: NavigateDestination
     object JadeGuide: NavigateDestination
+    object ScanSatochip: NavigateDestination
 
     object ChooseAssetAccounts: NavigateDestination
 

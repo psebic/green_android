@@ -258,6 +258,10 @@
   <string name="id_congratulations">Congratulations!</string>
   <string name="id_connect_a_different_hardware">Connect a different Hardware Device</string>
   <string name="id_connect_hardware_wallet">Connect hardware wallet</string>
+
+  <string name="id_connect_satochip">Connect Satochip</string>
+
+
   <string name="id_connect_jade">Connect Jade</string>
   <string name="id_connect_jade_with_a_usb_cable">Connect Jade with a USB cable to download the latest firmware update</string>
   <string name="id_connect_through_a_proxy">Connect through a proxy</string>

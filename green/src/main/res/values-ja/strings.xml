@@ -282,6 +282,7 @@
   <string name="id_congratulations">おめでとうございます。</string>
   <string name="id_connect_a_different_hardware">別のハードウェアデバイスを接続する</string>
   <string name="id_connect_hardware_wallet">ハードウェアウォレットを接続する</string>
+  <string name="id_connect_satochip">Connectez votre Satochip</string>
   <string name="id_connect_jade">Jadeを接続する</string>
   <string name="id_connect_jade_with_a_usb_cable">JadeをUSBケーブルで接続して最新のファームウェアをダウンロードしてください</string>
   <string name="id_connect_through_a_proxy">プロキシを使って接続する</string>

@@ -1,4 +1,5 @@
 
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
@@ -88,15 +89,26 @@ kotlin {
             implementation(libs.mpfilepicker)
             implementation(libs.middle.ellipsis.text3)
             /** ----------------------------------------------------------------------------------------- */
+            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha10")
+//            implementation("fr.acinq.bitcoin/bitcoin-kmp:0.20.0")
+//            runtimeOnly("fr.acinq.bitcoin:bitcoin-kmp:0.20.0")
+
         }
 
         val desktopMain by getting
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+            @OptIn(ExperimentalComposeLibrary::class)
+            implementation(compose.desktop.components.animatedImage)
+            implementation(compose.desktop.currentOs)
+
         }
 
         androidMain.dependencies {
             implementation(compose.preview)
+
+            implementation("io.coil-kt:coil-compose:2.1.0")
+            implementation("io.coil-kt:coil-gif:2.1.0")
 
             /**  --- Modules ---------------------------------------------------------------------------- */
             implementation(project(":base"))

@@ -12,6 +12,7 @@ import com.blockstream.common.models.archived.ArchivedAccountsViewModel
 import com.blockstream.common.models.camera.CameraViewModel
 import com.blockstream.common.models.demo.DemoViewModel
 import com.blockstream.common.models.devices.JadeGuideViewModel
+import com.blockstream.common.models.devices.ScanSatochipViewModel
 import com.blockstream.common.models.drawer.DrawerViewModel
 import com.blockstream.common.models.exchange.AccountExchangeViewModel
 import com.blockstream.common.models.exchange.OnOffRampsViewModel
@@ -96,6 +97,7 @@ val factoryViewModels = module {
     factoryOf(::ArchivedAccountsViewModel)
     factoryOf(::UseHardwareDeviceViewModel)
     factoryOf(::JadeGuideViewModel)
+    factoryOf(::ScanSatochipViewModel)
     factoryOf(::WatchOnlyNetworkViewModel)
     factoryOf(::AddressesViewModel)
     factoryOf(::SignMessageViewModel)

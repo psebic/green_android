@@ -4,6 +4,8 @@
       <verify-metadata>false</verify-metadata>
       <verify-signatures>false</verify-signatures>
       <trusted-artifacts>
+         <trust group="^io[.]coil-kt($|([.].*))" regex="true" reason="Trust all Coil artifacts"/>
+         <trust group="^com[.]squareup[.]okhttp3($|([.].*))" regex="true" reason="Trust all OkHttp artifacts"/>
          <trust file="gradle-8.9-src.zip"/>
          <trust file=".*-javadoc[.]jar" regex="true"/>
          <trust file=".*-sources[.]jar" regex="true"/>

@@ -57,6 +57,7 @@
         android:name="com.blockstream.green.GreenApplication"
         android:allowBackup="false"
         android:icon="${appIcon}"
+        android:windowSoftInputMode="adjustResize"
         android:roundIcon="${appIconRound}"
         android:label="@string/app_name"
         android:supportsRtl="true"

@@ -450,6 +450,10 @@ abstract class CountlyBase(
         eventRecord(Events.WALLET_ADD.toString())
     }
 
+    fun scanSatochip() {
+        eventRecord(Events.SCAN_SATOCHIP.toString())
+    }
+
     fun hardwareWallet() {
         eventRecord(Events.WALLET_HWW.toString())
     }
@@ -812,6 +816,8 @@ abstract class CountlyBase(
 
         WALLET_ADD("wallet_add"),
         WALLET_HWW("wallet_hww"),
+
+        SCAN_SATOCHIP("scan_satochip"),
 
         WALLET_NEW("wallet_new"),
         WALLET_RESTORE("wallet_restore"),
